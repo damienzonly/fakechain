@@ -9,7 +9,7 @@ services:
       - broker
     restart: always
     deploy:
-      replicas: 5
+      replicas: 1
     build:
       context: .
     command: worker
@@ -26,3 +26,5 @@ services:
       - BROKER_URL=mqtt://broker
   broker:
     image: emqx/emqx
+    ports:
+      - 8080:1883
