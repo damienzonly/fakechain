@@ -45,6 +45,14 @@ export class Master {
         this.queue[taskId] = [];
         let step = random(1, 4);
         const tmpQueue = {} as any;
+        /**
+         * this is a mechanism to split the amount of tuples among
+         * all workers. this is not currently working
+         * because the algorithm is choosing always the same worker
+         * for each chunk of tuples. it would need some fine tuning
+         * for choosing different workers for each cycle...
+         * but you get the idea
+         */
         for (let i = 0; i < payload.length; i += step) {
             const eligible = this.getEligibleWorker();
             if (!eligible) {
@@ -76,7 +84,7 @@ export class Master {
         const [,,workerId, taskId] = topic.split("/");
         const payload = parseMessage<TaskResultPayload>(message);
         if (typeof payload.result !== 'number') {
-            console.error(`ignoring invalid result: ${payload} from worker ${workerId} on task ${taskId}`)
+            console.error(`ignoring invalid result: ${payload.result} from worker ${workerId} on task ${taskId}`)
             return
         }
         if (!(payload.taskId in this.queue)) {
