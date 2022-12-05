@@ -26,7 +26,7 @@ export class Master {
                 "workers status:",
                 JSON.stringify(this.status, null, 2)
             );
-        });
+        }, 2500);
         this.dispatcher.addRule(
             topics.newTransaction,
             this.newTransactionHandler.bind(this)
