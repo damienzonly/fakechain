@@ -5,6 +5,8 @@ version: '3'
 # just by using the service name defined in the yaml, and consider it as an hostname
 services:
   worker:
+    depends_on:
+      - broker
     restart: always
     deploy:
       replicas: 5
@@ -12,15 +14,15 @@ services:
       context: .
     command: worker
     environment:
-      - BROKER_URL=tcp://broker
+      - BROKER_URL=mqtt://broker
   master:
+    depends_on:
+      - broker
     restart: always
     build:
       context: .
     command: master
     environment:
-      - BROKER_URL=tcp://broker
+      - BROKER_URL=mqtt://broker
   broker:
-    image: eclipse-mosquitto:2
-    ports:
-      - 11883:1883
+    image: emqx/emqx
