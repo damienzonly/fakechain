@@ -9,7 +9,7 @@ services:
       - broker
     restart: always
     deploy:
-      replicas: 1
+      replicas: 3
     build:
       context: .
     command: worker
