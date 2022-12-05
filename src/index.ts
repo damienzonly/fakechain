@@ -1,4 +1,7 @@
 import { Master } from "./master";
+import { createMQTTConnection } from "./mqtt";
+import topics from "./topics";
+import { random } from "./utils";
 import { Worker } from "./worker";
 
 function die(msg) {
@@ -12,9 +15,18 @@ if (!mode) die("");
 if (mode === 'master') {
     const master = new Master();
     master.start()
+    setInterval(() => {
+        const client = createMQTTConnection();
+        client.publish(topics.newTransaction, JSON.stringify(generateSimulationData()))
+    }, 2400)
 } else if (mode === 'worker') {
     const worker = new Worker();
     worker.start()
 } else {
     die(`invalid mode provided: ${mode}`)
+}
+
+function generateSimulationData() {
+    const length = random(1, 20);
+    return Array.from({length}, () => [random(1, 300), random(1, 300)]); //
 }
