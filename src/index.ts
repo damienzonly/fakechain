@@ -18,7 +18,7 @@ if (mode === 'master') {
     setInterval(() => {
         const client = createMQTTConnection();
         client.publish(topics.newTransaction, JSON.stringify(generateSimulationData()))
-    }, 2400)
+    }, 200)
 } else if (mode === 'worker') {
     const worker = new Worker();
     worker.start()
@@ -28,5 +28,5 @@ if (mode === 'master') {
 
 function generateSimulationData() {
     const length = random(1, 20);
-    return Array.from({length}, () => [random(1, 300), random(1, 300)]); //
+    return Array.from({length}, () => [random(1, 10), random(1, 10)]); //
 }
