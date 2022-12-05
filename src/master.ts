@@ -11,7 +11,7 @@ export class Master {
     protected mqtt: MqttClient;
     protected dispatcher: Dispatcher;
     protected timers: { [id: string]: NodeJS.Timeout } = {};
-    protected status: WorkStatus;
+    protected status: WorkStatus = {};
 
     protected queue: { [id: string]: {workerId: string, result?: any}[] } = {}; // keeps track of who is working on every task id
 
@@ -27,6 +27,7 @@ export class Master {
                 JSON.stringify(this.status, null, 2)
             );
         }, 2500);
+        this.listenKeepAlives();
         this.dispatcher.addRule(
             topics.newTransaction,
             this.newTransactionHandler.bind(this)
@@ -72,7 +73,7 @@ export class Master {
     }
 
     protected taskCompletedHandler(topic: string, message) {
-        const [,,workerId, taskId] = topic.split("/")[2];
+        const [,,workerId, taskId] = topic.split("/");
         const payload = parseMessage<TaskResultPayload>(message);
         if (typeof payload.result !== 'number') {
             console.error(`ignoring invalid result: ${payload} from worker ${workerId} on task ${taskId}`)
@@ -101,7 +102,7 @@ export class Master {
 
     protected async upsertWorkerToCache(id: string) {
         const _now = Date.now();
-        if (!(id in this.status)) this.start[id] = { load: 0, ts: _now };
+        if (!(id in this.status)) this.status[id] = { load: 0, ts: _now };
         this.status[id].ts = _now;
     }
 
