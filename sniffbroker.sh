@@ -1,1 +1,1 @@
-mosquitto_sub -p 11883 -t '#' -v
+mosquitto_sub -p 8080 -t '+/#' -v
