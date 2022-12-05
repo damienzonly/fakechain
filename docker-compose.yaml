@@ -1,0 +1,26 @@
+version: '3'
+
+# in docker compose, every service acts like a named load balancer that we can invoce via network requests
+# in other words, from within the compose environment, we can make api requests from a service to another
+# just by using the service name defined in the yaml, and consider it as an hostname
+services:
+  worker:
+    restart: always
+    deploy:
+      replicas: 5
+    build:
+      context: .
+    command: worker
+    environment:
+      - BROKER_URL=tcp://broker
+  master:
+    restart: always
+    build:
+      context: .
+    command: master
+    environment:
+      - BROKER_URL=tcp://broker
+  broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - 11883:1883

@@ -1,0 +1,1 @@
+mosquitto_sub -p 11883 -t '#' -v
