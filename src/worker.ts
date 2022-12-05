@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { createMQTTConnection } from "./mqtt";
 import topics from "./topics";
 import Dispatcher from "mqtt-dispatcher";
-import { parseMessage, multiplicateArray, now } from "./utils";
+import { parseMessage, multiplicateArray, now, random } from "./utils";
 import { TaskPayload } from "./types";
 
 export class Worker {
@@ -39,14 +39,18 @@ export class Worker {
         if (!payload) return // prevent parsing wrong formatted messages
         // perform multiplication of all the tuples in the tasks list
         console.log("[worker]: new task:", JSON.stringify(payload.tasks))
+        // simulate long computation time
         const computation = payload.tasks.reduce(
             (acc, [a, b]) => multiplicateArray([acc, a, b]),
             1
         );
-        this.sendResult(payload.taskId, computation);
+        setTimeout(() => {
+            this.sendResult(payload.taskId, computation);
+        }, random(3, 7) * 1000);
     }
 
     protected sendResult(taskId: string, result: number) {
+        console.log(`[worker]: done with result`, result)
         this.mqtt.publish(
             topics.taskCompleted(this.id, taskId),
             JSON.stringify({ taskId, result })
